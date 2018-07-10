@@ -4,7 +4,7 @@ SnortWebApp.config(function($interpolateProvider){
 	$interpolateProvider.startSymbol('[[').endSymbol(']]');
 });
 
-SnortWebApp.controller('SnortWebController', function($scope, $http) {
+SnortWebApp.controller('SnortWebController', function($scope, $http, $timeout) {
 	$http.get('get_pcaps').then(function(response) {
 		$scope.pcap_list = response.data;
 		$scope.selectedPcap = response.data[0].name;
@@ -29,39 +29,40 @@ SnortWebApp.controller('SnortWebController', function($scope, $http) {
 		$('#loadRulesModal').modal('toggle');
 	}
 	$scope.upload_pcap = function() {
-		$scope.$apply(function() {
-			$.ajax({
-				url: '/upload_pcap',
-				type: 'POST',
-				data: new FormData($('#pcap-upload-form')[0]),
-				// Tell jQuery not to process data or worry about content-type
-				// You *must* include these options!
-				cache: false,
-				contentType: false,
-				processData: false,
-				dataType: "json",
-				// Custom XMLHttpRequest
-				xhr: function() {
-					var myXhr = $.ajaxSettings.xhr();
-					if (myXhr.upload) {
-						// For handling the progress of the upload
-						myXhr.upload.addEventListener('progress', function(e) {
-							if (e.lengthComputable) {
-								$('progress').attr({
-									value: e.loaded,
-									max: e.total,
-								});
-							}
-						} , false);
-					}
-					return myXhr;
+		$.ajax({
+			url: '/upload_pcap',
+			type: 'POST',
+			data: new FormData($('#pcap-upload-form')[0]),
+			// Tell jQuery not to process data or worry about content-type
+			// You *must* include these options!
+			cache: false,
+			contentType: false,
+			processData: false,
+			dataType: "json",
+			// Custom XMLHttpRequest
+			xhr: function() {
+				var myXhr = $.ajaxSettings.xhr();
+				if (myXhr.upload) {
+					// For handling the progress of the upload
+					myXhr.upload.addEventListener('progress', function(e) {
+						if (e.lengthComputable) {
+							$('progress').attr({
+								value: e.loaded,
+								max: e.total,
+							});
+						}
+					} , false);
 				}
-			}).done(function(response){
-				$('#uploadPcapModal').modal('toggle');
+				return myXhr;
+			}
+		}).done(function(response){
+			$scope.$apply(function() {
 				console.log(response)
 				$scope.selectedPcap = response.filename
 				$scope.pcap_list.push({"name":response.filename, "id":response.id})
+				$('#uploadPcapModal').modal('toggle');
 			});
+			$timeout(function() { $("#selectedPcap").find('option[value="' + response.id + '"]').prop("selected", true); });
 		});
 	}
 });
