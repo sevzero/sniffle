@@ -7,18 +7,26 @@ SnortWebApp.config(function($interpolateProvider){
 SnortWebApp.controller('SnortWebController', function($scope, $http) {
 	$http.get('get_pcaps').then(function(response) {
 		$scope.pcap_list = response.data;
-		$scope.selectedPcap = response.data[0].name
-		$scope.selectedPcapId = response.data[0].id
+		$scope.selectedPcap = response.data[0].name;
+		$scope.selectedPcapId = response.data[0].id;
 	});
-	$("#runRulesBtn").click(function() {
-		$http.post('run_rules', {"pcap_id":$scope.selectedPcapId, "rules":$("#snortRules").val()}).then(function(response) {
-			console.log(response.data);
-			$scope.pcap_response = response.data
+	$scope.runRules = function() {
+		$http.post('run_rules', {"pcap_id":$("#selectedPcap").val(), "rules":$("#snortRules").val()}).then(function(response) {
+			$scope.pcap_response = response.data;
 		});
-	});
+	}
 	$scope.updatePcap = function(pcapName, id) {
 		$scope.selectedPcap = pcapName;
 		$scope.selectedPcapId = id;
+	}
+	$scope.load_rules = function() {
+		var file = $("#rules-file-loader").prop("files")[0];
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			$("#snortRules").val(e.target.result);
+		}
+		reader.readAsText(file);
+		$('#loadRulesModal').modal('toggle');
 	}
 	$scope.upload_pcap = function() {
 		$scope.$apply(function() {

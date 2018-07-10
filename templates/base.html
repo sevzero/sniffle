@@ -13,7 +13,7 @@
 	<body ng-app="SnortWeb">
 		<div ng-controller="SnortWebController">
 			<nav class="navbar navbar-dark bg-dark" style="color: #EEEEEE;">
-				Snort Web
+				Sniffle
 			</nav>
 			<br />
 			<div class="container-fluid">
@@ -23,19 +23,20 @@
 							<div class="card-header">
 								<ul class="nav nav-pills card-header-pills">
 									<li class="nav-item card-btn">
-										<div class="btn-group">
-											<button type="button" class="btn btn-primary">[[ selectedPcap ]]</button>
-											<button type="button" class="btn btn-primary flat" data-toggle="modal" data-target="#uploadPcapModal" aria-haspopup="true" aria-expended="false">+</button>
-											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expended="false">
-												<span class="caret"></span>
-											</button>
-											<ul class="dropdown-menu" style="padding-left:10px;">
-												<li ng-repeat="pcap in pcap_list"><a href="#" ng-click="updatePcap(pcap.name, pcap.id)" value="pcap.name">[[ pcap.name ]]</a></li>
-											</ul>
+										<div class="input-group">
+											<select class="custom-select" id="selectedPcap">
+												<option ng-repeat="pcap in pcap_list" value="[[ pcap.id ]]">[[ pcap.name ]]</option>
+											</select>
+											<div class="input-group-append">
+												<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadPcapModal" aria-haspopup="true" aria-expended="false">+</button>
+											</div>
 										</div>
 									</li>
+									<li>
+										<button type="button" class="btn btn-primary" style="margin-left:10px;" data-toggle="modal" data-target="#loadRulesModal">Load rules file</button>
+									</li>
 									<li class="nav-item card-btn"> 
-										<a href="#" id="runRulesBtn" class="btn btn-danger">Test rules</a>
+										<a href="#" id="runRulesBtn" class="btn btn-success" ng-click="runRules()">Test rules</a>
 									</li>
 								</ul>
 							</div>
@@ -44,9 +45,7 @@
 								<div ng-show="pcap_response.status == 'error'" class="alert alert-danger">
 									[[ pcap_response.msg ]]
 								</div>
-								<textarea id="snortRules" style="width:100%;"></textarea>
-							</div>
-							<div class="card-footer">
+								<textarea rows="4" id="snortRules" style="width:100%;"></textarea>
 							</div>
 						</div>
 					</div>
@@ -64,6 +63,7 @@
 				</div>
 			</div>
 			<div ng-include="'inc/upload_pcap.html'"></div>
+			<div ng-include="'inc/load_rules.html'"></div>
 		</div>
 	</body>
 </html>
