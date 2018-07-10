@@ -1,0 +1,22 @@
+<!-- Modal -->
+<div class="modal fade" id="uploadPcapModal" tabindex="-1" role="dialog" aria-labelledby="uploadPcapModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="uploadPcapModalLabel">Upload a pcap</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form id="pcap-upload-form" method="post" enctype="multipart/form-data" action="/">
+				<div class="modal-body">
+					<input type="file" name="file" id="pcap-uploader"></input>
+				</div>
+			</form>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button id="pcap-upload-submit" class="btn btn-primary" ng-click="upload_pcap()">Upload</button>
+			</div>
+		</div>
+	</div>
+</div>

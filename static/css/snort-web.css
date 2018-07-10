@@ -1,0 +1,10 @@
+div .header {
+	text-align: center;
+	padding: 10px 0 4px 0;
+	background-color: #B0B0FF;
+	border-bottom: 2px solid #9090D0;
+}
+
+.card-btn {
+	margin-left: 10px;
+}

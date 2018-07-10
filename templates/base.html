@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Snort Web</title>
+		<link rel="stylesheet" href="static/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="static/css/snort-web.css" />
+		<script type="text/javascript" src="static/js/angular.min.js"></script>
+		<script src="static/js/jquery-3.3.1.min.js"></script>
+		<script src="static/js/popper.min.js"></script>
+		<script src="static/js/bootstrap.min.js"></script>
+		<script src="static/js/snort_web_controller.js"></script>
+	</head>
+	<body ng-app="SnortWeb">
+		<div ng-controller="SnortWebController">
+			<nav class="navbar navbar-dark bg-dark" style="color: #EEEEEE;">
+				Snort Web
+			</nav>
+			<br />
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md">
+						<div class="card bg-light mb-3">
+							<div class="card-header">
+								<ul class="nav nav-pills card-header-pills">
+									<li class="nav-item card-btn">
+										<div class="btn-group">
+											<button type="button" class="btn btn-primary">[[ selectedPcap ]]</button>
+											<button type="button" class="btn btn-primary flat" data-toggle="modal" data-target="#uploadPcapModal" aria-haspopup="true" aria-expended="false">+</button>
+											<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expended="false">
+												<span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu" style="padding-left:10px;">
+												<li ng-repeat="pcap in pcap_list"><a href="#" ng-click="updatePcap(pcap.name, pcap.id)" value="pcap.name">[[ pcap.name ]]</a></li>
+											</ul>
+										</div>
+									</li>
+									<li class="nav-item card-btn"> 
+										<a href="#" id="runRulesBtn" class="btn btn-danger">Test rules</a>
+									</li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<h5 class="card-title">Enter snort rules below</h5>
+								<div ng-show="pcap_response.status == 'error'" class="alert alert-danger">
+									[[ pcap_response.msg ]]
+								</div>
+								<textarea id="snortRules" style="width:100%;"></textarea>
+							</div>
+							<div class="card-footer">
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="card" ng-show="pcap_response.status == 'success'">
+					<div class="card-body">
+						<h5>Alerts</h5>
+						<ul class="list-group">
+							<li class="list-group-item list-group-item-info" ng-repeat="snort_alert in pcap_response.alerts">
+								[[ snort_alert.rule ]]
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div ng-include="'inc/upload_pcap.html'"></div>
+		</div>
+	</body>
+</html>
