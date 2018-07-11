@@ -11,8 +11,10 @@ SnortWebApp.controller('SnortWebController', function($scope, $http, $timeout) {
 		$scope.selectedPcapId = response.data[0].id;
 	});
 	$scope.runRules = function() {
+		$scope.waiting_for_snort = true;
 		$http.post('run_rules', {"pcap_id":$("#selectedPcap").val(), "rules":$("#snortRules").val()}).then(function(response) {
 			$scope.pcap_response = response.data;
+			$scope.waiting_for_snort = false;
 		});
 	}
 	$scope.updatePcap = function(pcapName, id) {
@@ -57,7 +59,6 @@ SnortWebApp.controller('SnortWebController', function($scope, $http, $timeout) {
 			}
 		}).done(function(response){
 			$scope.$apply(function() {
-				console.log(response)
 				$scope.selectedPcap = response.filename
 				$scope.pcap_list.push({"name":response.filename, "id":response.id})
 				$('#uploadPcapModal').modal('toggle');

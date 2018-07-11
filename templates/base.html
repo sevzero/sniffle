@@ -38,6 +38,11 @@
 									<li class="nav-item card-btn"> 
 										<a href="#" id="runRulesBtn" class="btn btn-success" ng-click="runRules()">Test rules</a>
 									</li>
+									<li class="nav-item card-btn">
+										<button class="btn btn-default" ng-show="waiting_for_snort">
+											Running...
+										</button>
+									</li>
 								</ul>
 							</div>
 							<div class="card-body">
@@ -53,7 +58,7 @@
 				<br />
 				<div class="card" ng-show="pcap_response.status == 'success'">
 					<div class="card-body">
-						<h5>Alerts</h5>
+						<h5>Alerts ([[ pcap_response.alerts.length ]])</h5>
 						<ul class="list-group">
 							<li class="list-group-item list-group-item-info" ng-repeat="snort_alert in pcap_response.alerts">
 								[[ snort_alert.rule ]]
