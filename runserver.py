@@ -44,11 +44,10 @@ def process_alerts(out):
 
 def run_snort(rules, pcap):
     result = subprocess.Popen(["snort", "-c", "snort.conf", "--pcap-single=%s" % pcap], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print ' '.join(["snort", "-c", "snort.conf", "-r", pcap])
     out, err = result.communicate()
-    #print err
-    #print out
-    if 'Fatal Error, Quitting..' in err:
+    out = out.decode()
+    err = err.decode()
+    if 'ERROR:' in err:
         return "error", [line for line in err.split('\n') if line.startswith('ERROR:')][0], []
     else:
         alerts = process_alerts(out)
@@ -67,8 +66,8 @@ def run_rules():
     post_data = request.get_json(force=True) 
     rules = post_data['rules']
     pcap = post_data['pcap_id'].replace('/', '')
-    with open('%s/rules.rules' % rules_dir, 'w') as rules_file:
-        rules_file.write(rules)
+    with open('%s/rules.rules' % rules_dir, 'wb') as rules_file:
+        rules_file.write(bytes(rules, encoding="utf-8"))
     status, msg, alerts = run_snort(rules='%s/rules.rules' % rules_file, pcap="%s/%s" % (app.config['UPLOAD_FOLDER'], pcap))
     return jsonify({"status":status, "msg":msg, "alerts":alerts})
 

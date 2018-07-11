@@ -1,9 +1,12 @@
 FROM ubuntu:18.04
 
-RUN apt-get update -y
-RUN apt-get -y install vim wget build-essential flex bison libpcre3-dev libdumbnet-dev zlib1g-dev python-pip
-RUN pip install --upgrade pip
-RUN pip install flask flask-sqlalchemy
+ENV http_proxy=http://192.168.20.14:3128
+ENV https_proxy=http://192.168.20.14:3128
+
+RUN apt-get -y update
+RUN apt-get -y install vim wget build-essential flex bison libpcre3-dev libdumbnet-dev zlib1g-dev python3-pip
+RUN pip3 install --upgrade pip
+RUN pip3 install flask flask-sqlalchemy
 RUN mkdir /snort_src 
 WORKDIR /snort_src
 RUN wget https://www.snort.org/downloads/snort/daq-2.0.6.tar.gz && tar -xvzf daq-2.0.6.tar.gz
@@ -32,4 +35,4 @@ RUN mkdir -p /etc/snort/rules && \
 RUN mkdir -p /data/ && chown snort:snort /data
 USER snort
 WORKDIR /etc/snort/web
-ENTRYPOINT ["python", "runserver.py"]
+ENTRYPOINT ["python3", "runserver.py"]
