@@ -61,6 +61,8 @@ SnortWebApp.controller('SnortWebController', function($scope, $http, $timeout) {
 		}).done(function(response){
 			$scope.$apply(function() {
 				$scope.selectedPcap = response.filename
+				if ($scope.pcap_list.slice(-1)[0]["id"].startsWith("tmp_"))
+					$scope.pcap_list.pop();
 				$scope.pcap_list.push({"name":response.filename, "id":response.id})
 				$('#uploadPcapModal').modal('toggle');
 			});

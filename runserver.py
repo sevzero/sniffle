@@ -102,8 +102,8 @@ def upload_pcap():
         db.session.add(pcap)
         db.session.commit()
     else:
-        filename = request.cookies['sess_id']
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], request.cookies['sess_id']))
+        filename = "tmp_" + request.cookies['sess_id']
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return jsonify({"status":"success", "msg":"File uploaded successfully", "filename":file.filename, "id":filename})
 
 @app.route('/get_pcaps')
