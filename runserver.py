@@ -45,6 +45,7 @@ def process_alerts(out):
 def run_snort(rules, pcap):
     result = subprocess.Popen(["snort", "-c", "snort.conf", "--pcap-single=%s" % pcap], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = result.communicate()
+    print (pcap)
     out = out.decode()
     err = err.decode()
     if 'ERROR:' in err:
@@ -82,8 +83,12 @@ def base():
     return response
 
 valid_extensions = ['.pcap', '.pcapng', '.cap']
+session_id_regex = re.compile('^[a-fA-F0-9]{32}$')
+
 @app.route('/upload_pcap', methods=["POST"])
 def upload_pcap():
+    if not session_id_regex.match(request.cookies['sess_id']):
+        return jsonify({"status":"ERROR", "msg":"Invalid session ID"})
     if 'file' not in request.files:
         return jsonify({"status":"error", "msg":"File missing"})
     file = request.files['file']
@@ -97,6 +102,7 @@ def upload_pcap():
         db.session.add(pcap)
         db.session.commit()
     else:
+        filename = request.cookies['sess_id']
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], request.cookies['sess_id']))
     return jsonify({"status":"success", "msg":"File uploaded successfully", "filename":file.filename, "id":filename})
 
