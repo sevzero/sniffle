@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, jsonify, send_from_directory, render_template
+from flask import Flask, request, redirect, jsonify, send_from_directory, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
 import time
 import os
@@ -71,9 +71,15 @@ def run_rules():
     status, msg, alerts = run_snort(rules='%s/rules.rules' % rules_file, pcap="%s/%s" % (app.config['UPLOAD_FOLDER'], pcap))
     return jsonify({"status":status, "msg":msg, "alerts":alerts})
 
+def gen_session_id():
+    return os.urandom(16).hex()
+
 @app.route('/', methods=['GET', 'POST'])
 def base():
-    return render_template('base.html')
+    response = make_response(render_template('base.html'))
+    if not request.cookies.get('sess_id'):
+        response.set_cookie('sess_id', gen_session_id())
+    return response
 
 valid_extensions = ['.pcap', '.pcapng', '.cap']
 @app.route('/upload_pcap', methods=["POST"])
@@ -84,10 +90,14 @@ def upload_pcap():
     if not [i for i in valid_extensions if file.filename.endswith(i)]:
         return jsonify({"status":"error", "msg":"Invalid file extension"})
     filename = str(int(time.time()))
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    pcap = Pcap(pcap_name=filename, original_filename=file.filename)
-    db.session.add(pcap)
-    db.session.commit()
+    remember = request.headers.get("X-Remember")
+    if remember == 'true':
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        pcap = Pcap(pcap_name=filename, original_filename=file.filename)
+        db.session.add(pcap)
+        db.session.commit()
+    else:
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], request.cookies['sess_id']))
     return jsonify({"status":"success", "msg":"File uploaded successfully", "filename":file.filename, "id":filename})
 
 @app.route('/get_pcaps')

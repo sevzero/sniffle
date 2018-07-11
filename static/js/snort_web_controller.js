@@ -41,6 +41,7 @@ SnortWebApp.controller('SnortWebController', function($scope, $http, $timeout) {
 			contentType: false,
 			processData: false,
 			dataType: "json",
+			headers: {"X-Remember": $("#savePermanently").prop("checked")},
 			// Custom XMLHttpRequest
 			xhr: function() {
 				var myXhr = $.ajaxSettings.xhr();
